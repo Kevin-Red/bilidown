@@ -1,0 +1,55 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <map>
+#include <direct.h>
+
+using namespace std;
+
+string table = "fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF";
+map<long, long> tr;
+long s[] = {11, 10, 3, 8, 4, 6};
+long long xor1 = 177451812;
+long long add1 = 8728348608;
+
+
+//bv转av
+string dec(string x1) {
+   long long r = 0;
+   for (int a = 0; a < 6; a++) {
+       r += tr[x1[s[a]]] * pow(58, a);
+   }
+   return to_string(((long long)r - (long long)add1) ^ xor1);
+}
+
+int main() {
+   for (int i = 0; i < 58; i++) {
+       tr[table[i]] = i;
+   }
+   string avid;
+   cout << "请输入bv号：";
+   cin >> avid;
+
+   //获取av号
+   avid = dec(avid);
+
+   //当前路径
+   char *dir;
+   dir = getcwd(NULL, 0);
+   string dirs(dir, dir + strlen(dir));
+
+   //下载命令
+   string youtube = dirs + "/youtube-dl.exe https://www.bilibili.com/video/av" + avid + " -o" + avid + ".flv";
+   system((char*)youtube.data());
+
+   //转码命令
+   string ffmpeg = dirs + "/ffmpeg.exe -i " + avid + ".flv -vcodec copy -acodec copy " + avid + ".mp4";
+   system((char*)ffmpeg.data());
+
+   //删除flv
+   string down = "del /F " + avid + ".flv";
+   system((char*)down.data());
+
+   return 0;
+}
+
